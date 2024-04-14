@@ -95,7 +95,7 @@ Repaint();
 void GUIMyFrame1::Repaint()
 {
     double window_x = WxPanel->GetSize().x, window_y = WxPanel->GetSize().y;
-    double n = 0.1, f= 100.0, r = 1.0, l = -1.0, t = 1.0, b = -1.0;
+    double n = 0.1, f = 100.0;// r = 1.0, l = -1.0, t = 1.0, b = -1.0;
     //double n = 2.0, f = 0.1, r = window_x, l = 0.0, t = window_y, b =0.0;
     Vector4 set_matrix_v_1, set_matrix_v_2, set_matrix_v_3, set_matrix_v_4;
     Matrix4 MVP_matrix;
@@ -106,8 +106,8 @@ void GUIMyFrame1::Repaint()
     double alfa = (M_PI) / 2.0, a_r = window_x / window_y;
     set_matrix_v_1.Set(1/(a_r*tan(alfa/2.0)), 0.0, 0.0);
     set_matrix_v_2.Set(0.0, 1/tan(alfa/2.0), 0.0);
-    set_matrix_v_3.Set(0.0, 0.0, (f + n) / (f - n));
-    set_matrix_v_4.Set(0.0, 0.0, 2.0 * f * n / (f - n));
+    set_matrix_v_3.Set(0.0, 0.0, -1.0*(f + n) / (f - n));
+    set_matrix_v_4.Set(0.0, 0.0, -2.0 * f * n / (f - n));
     SetMatrix(MVP_matrix, set_matrix_v_1, set_matrix_v_2, set_matrix_v_3, set_matrix_v_4);
     MVP_matrix.data[3][2] = -1.0;
     MVP_matrix.data[3][3] = 0.0;
@@ -144,9 +144,9 @@ void GUIMyFrame1::Repaint()
     set_matrix_v_4.Set(0.0, 0.0, 0.0);
     SetMatrix(Rot_Z_matrix, set_matrix_v_1, set_matrix_v_2, set_matrix_v_3, set_matrix_v_4);
 
-    double Tx = ((WxSB_TranslationX->GetValue() - 100.0) / 50.0) *(window_x / 2.0) *Sx;
-    double Ty = ((WxSB_TranslationY->GetValue() - 100.0) / 50.0) * (window_y / 2.0) * Sy;
-    double Tz = 1.1+ ((WxSB_TranslationZ->GetValue() - 100.0) / 50.0) *Sz ;
+    double Tx = -1.0*((WxSB_TranslationX->GetValue() - 100.0) / 50.0);
+    double Ty = ((WxSB_TranslationY->GetValue() - 100.0) / 50.0);
+    double Tz = 1.1+((WxSB_TranslationZ->GetValue() - 100.0) / 50.0) ;
     Matrix4 Trans_matrix;
     set_matrix_v_1.Set(1.0, 0.0, 0.0);
     set_matrix_v_2.Set(0.0, 1.0, 0.0);
@@ -154,8 +154,9 @@ void GUIMyFrame1::Repaint()
     set_matrix_v_4.Set(Tx, Ty, Tz);
     SetMatrix(Trans_matrix, set_matrix_v_1, set_matrix_v_2, set_matrix_v_3, set_matrix_v_4);
 
-    //DrawWithTransformation(MVP_matrix * Rot_Z_matrix * Rot_Y_matrix * Rot_X_matrix * Scale_matrix);
-    DrawWithTransformation( Rot_Z_matrix * Rot_Y_matrix * Rot_X_matrix *  Scale_matrix , MVP_matrix , Trans_matrix);
+
+    //DrawWithTransformation(Scale_matrix* Rot_Z_matrix * Rot_Y_matrix * Rot_X_matrix * Trans_matrix, MVP_matrix, Trans_matrix);
+    DrawWithTransformation(Rot_Z_matrix * Rot_Y_matrix * Rot_X_matrix *  Scale_matrix , MVP_matrix , Trans_matrix);
 // tu rysowac
 }
 
@@ -163,16 +164,26 @@ void GUIMyFrame1::Repaint()
 
 void GUIMyFrame1::DrawWithTransformation(Matrix4 transformation, Matrix4 prspective, Matrix4 translation)
 {
+    
+
+    double Tx = -1.0 * ((WxSB_TranslationX->GetValue() - 100.0) / 50.0);
+    double Ty = ((WxSB_TranslationY->GetValue() - 100.0) / 50.0);
+    double Tz = 1.0+ ((WxSB_TranslationZ->GetValue() - 100.0) / 50.0);
     double window_x = WxPanel->GetSize().x, window_y = WxPanel->GetSize().y;
+    Matrix4 scale_matrix;
+    scale_matrix.data[0][0] = window_x /2.0;
+    scale_matrix.data[1][1] = window_y / 2.0;
+    scale_matrix.data[2][2] = 1.0;
+    scale_matrix.data[3][3] = 1.0;
     wxClientDC dc1(WxPanel);
     wxBufferedDC dc(&dc1);
 
     dc.SetBackground(wxBrush(RGB(255, 255, 255)));
     dc.Clear();
 
-    Vector4 v_eye, v_center, v_up;
+    /*Vector4 v_eye, v_center, v_up;
     v_eye.Set(0.0, 0.0, 0.0); v_center.Set(0.0, 0.0, 1.1); v_up.Set(0.0, 1.0, 0.0);
-    Matrix4 look_matrix = LookAt(v_eye, v_center, v_up);
+    Matrix4 look_matrix = LookAt(v_eye, v_center, v_up);*/
 
     Vector4 v_begin, v_end;
     wxColor color_line;
@@ -183,13 +194,20 @@ void GUIMyFrame1::DrawWithTransformation(Matrix4 transformation, Matrix4 prspect
         color_line = wxColor(data[i].color.R, data[i].color.G, data[i].color.B);
         dc.SetPen(color_line);
 
-        v_begin = transformation * v_begin;
-        v_end = transformation * v_end;
+        
+
+        v_begin =  transformation *  v_begin;
+        v_end =  transformation * v_end;
+
+        v_begin.Set(v_begin.GetX() + Tx, v_begin.GetY() + Ty, v_begin.GetZ() + Tz);
+        v_end.Set(v_end.GetX() + Tx, v_end.GetY() + Ty, v_end.GetZ() + Tz);
+
+
 
         double barier = 0.1;
         if ((v_begin.GetZ() > barier && v_end.GetZ() <= barier) || (v_end.GetZ() > barier && v_begin.GetZ() <= barier))
         {
-            Vector4 v_in, v_out;
+           Vector4 v_in, v_out;
             if (v_end.GetZ() <= barier)
             {
                 v_in = v_begin;
@@ -206,41 +224,34 @@ void GUIMyFrame1::DrawWithTransformation(Matrix4 transformation, Matrix4 prspect
             v_begin = v_out;
             v_end = v_in;
 
-            v_begin = prspective * v_begin;
-            v_end = prspective * v_end;
+
+            v_begin =  prspective *  v_begin;
+            v_end =  prspective *  v_end;
+            
             v_begin.Set(v_begin.GetX()/ v_begin.data[3], v_begin.GetY() / v_begin.data[3], v_begin.GetZ() / v_begin.data[3]);
             v_end.Set(v_end.GetX() / v_end.data[3], v_end.GetY() / v_end.data[3], v_end.GetZ() / v_end.data[3]);
 
-            Matrix4 scale_matrix;
-            scale_matrix.data[0][0] = window_x / 2.0;
-            scale_matrix.data[1][1] = window_y / 2.0;
-            scale_matrix.data[2][2] = 1.0;
-            scale_matrix.data[3][3] = 1.0;
 
-            v_begin = translation* look_matrix * scale_matrix * v_begin;
-            v_end = translation * look_matrix * scale_matrix * v_end;
+            v_begin =  scale_matrix * v_begin;
+            v_end =  scale_matrix * v_end;
             dc.DrawLine(v_begin.GetX()  + window_x / 2.0, v_begin.GetY()  + window_y / 2.0, v_end.GetX()  + window_x / 2.0, v_end.GetY()  + window_y / 2.0);
 
         }
         else if (v_begin.GetZ() <= barier && v_end.GetZ() <= barier)
         {
-
         }
         else
         {
-            v_begin = prspective * v_begin;
-            v_end = prspective * v_end;
+
+            v_begin =  prspective *  v_begin;
+            v_end =  prspective *  v_end;
             v_begin.Set(v_begin.GetX() / v_begin.data[3], v_begin.GetY() / v_begin.data[3], v_begin.GetZ() / v_begin.data[3]);
             v_end.Set(v_end.GetX() / v_end.data[3], v_end.GetY() / v_end.data[3], v_end.GetZ() / v_end.data[3]);
 
-            Matrix4 scale_matrix;
-            scale_matrix.data[0][0] = window_x / 2.0;
-            scale_matrix.data[1][1] = window_y / 2.0;
-            scale_matrix.data[2][2] = 1.0;
-            scale_matrix.data[3][3] = 1.0;
+            
 
-            v_begin = translation * look_matrix * scale_matrix * v_begin;
-            v_end = translation * look_matrix * scale_matrix * v_end;
+            v_begin =   scale_matrix* v_begin;
+            v_end =  scale_matrix* v_end;
 
             dc.DrawLine(v_begin.GetX() + window_x / 2.0, v_begin.GetY() + window_y / 2.0, v_end.GetX() + window_x / 2.0, v_end.GetY() + window_y / 2.0);
         }
@@ -251,7 +262,7 @@ void GUIMyFrame1::DrawWithTransformation(Matrix4 transformation, Matrix4 prspect
         
     }
 }
-
+/*
 Matrix4 GUIMyFrame1::LookAt(Vector4 eye, Vector4 center, Vector4 up)
 {
     Matrix4 matrix;
@@ -292,7 +303,7 @@ double GUIMyFrame1::scalar_product(Vector4& a, Vector4& b)
     product=(a.GetX() * b.GetX() + a.GetY() * b.GetY()+ a.GetZ() * b.GetZ());
     return product;
 }
-
+*/
 void GUIMyFrame1::SetMatrix(Matrix4& matrix, Vector4& v_1, Vector4& v_2, Vector4& v_3, Vector4& v_4)//v_1 to v_4 are vertical vectors, this enable to easily set the matrix
 {
     matrix.data[0][0] = v_1.GetX();
