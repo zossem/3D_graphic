@@ -95,15 +95,10 @@ Repaint();
 void GUIMyFrame1::Repaint()
 {
     double window_x = WxPanel->GetSize().x, window_y = WxPanel->GetSize().y;
-    double n = 0.1, f = 100.0;// r = 1.0, l = -1.0, t = 1.0, b = -1.0;
-    //double n = 2.0, f = 0.1, r = window_x, l = 0.0, t = window_y, b =0.0;
     Vector4 set_matrix_v_1, set_matrix_v_2, set_matrix_v_3, set_matrix_v_4;
+
     Matrix4 MVP_matrix;
-    /*set_matrix_v_1.Set(2.0 * n / (r - l), 0.0, 0.0);
-    set_matrix_v_2.Set(0.0, 2.0 * n / (t - b), 0.0);
-    set_matrix_v_3.Set((r+l)/(r-l), (t+b)/ (t - b), -1.0*(f+n)/(f-n));
-    set_matrix_v_4.Set(0.0, 0.0, -2.0*f*n/(f-n));*/
-    double alfa = (M_PI) / 2.0, a_r = window_x / window_y;
+    double alfa = (M_PI) / 2.0, a_r = window_x / window_y, n = 0.1, f = 100.0;
     set_matrix_v_1.Set(1/(a_r*tan(alfa/2.0)), 0.0, 0.0);
     set_matrix_v_2.Set(0.0, 1/tan(alfa/2.0), 0.0);
     set_matrix_v_3.Set(0.0, 0.0, -1.0*(f + n) / (f - n));
@@ -112,9 +107,9 @@ void GUIMyFrame1::Repaint()
     MVP_matrix.data[3][2] = -1.0;
     MVP_matrix.data[3][3] = 0.0;
 
-    double Sx = (WxSB_ScaleX->GetValue() / 100.0);// *(window_x / 2.0);
-    double Sy = (WxSB_ScaleY->GetValue() / 100.0);// *(window_y / 2.0);
-    double Sz = (WxSB_ScaleZ->GetValue() / 100.0) ;
+    double Sx = (WxSB_ScaleX->GetValue() / 100.0);
+    double Sy = (WxSB_ScaleY->GetValue() / 100.0);
+    double Sz = (WxSB_ScaleZ->GetValue() / 100.0);
     Matrix4 Scale_matrix;
     set_matrix_v_1.Set(Sx, 0.0, 0.0);
     set_matrix_v_2.Set(0.0, Sy, 0.0);
@@ -123,20 +118,22 @@ void GUIMyFrame1::Repaint()
     SetMatrix(Scale_matrix, set_matrix_v_1, set_matrix_v_2, set_matrix_v_3, set_matrix_v_4);
 
     double Rx = (360.0 - WxSB_RotateX->GetValue())/180.0*M_PI;
-    double Ry = (WxSB_RotateY->GetValue())/ 180.0 * M_PI;
-    double Rz = (WxSB_RotateZ->GetValue())/ 180.0 * M_PI;
     Matrix4 Rot_X_matrix;
     set_matrix_v_1.Set(1.0, 0.0, 0.0);
     set_matrix_v_2.Set(0.0, cos(Rx), sin(Rx));
     set_matrix_v_3.Set(0.0, -sin(Rx), cos(Rx));
     set_matrix_v_4.Set(0.0, 0.0, 0.0);
     SetMatrix(Rot_X_matrix, set_matrix_v_1, set_matrix_v_2, set_matrix_v_3, set_matrix_v_4);
+
+    double Ry = (WxSB_RotateY->GetValue()) / 180.0 * M_PI;
     Matrix4 Rot_Y_matrix;
     set_matrix_v_1.Set(cos(Ry), 0.0, -sin(Ry));
     set_matrix_v_2.Set(0.0, 1.0, 0.0);
     set_matrix_v_3.Set(sin(Ry), 0.0, cos(Ry));
     set_matrix_v_4.Set(0.0, 0.0, 0.0);
     SetMatrix(Rot_Y_matrix, set_matrix_v_1, set_matrix_v_2, set_matrix_v_3, set_matrix_v_4);
+
+    double Rz = (WxSB_RotateZ->GetValue()) / 180.0 * M_PI;
     Matrix4 Rot_Z_matrix;
     set_matrix_v_1.Set(cos(Rz), sin(Rz),0.0);
     set_matrix_v_2.Set(-sin(Rz), cos(Rz), 0.0);
@@ -144,166 +141,84 @@ void GUIMyFrame1::Repaint()
     set_matrix_v_4.Set(0.0, 0.0, 0.0);
     SetMatrix(Rot_Z_matrix, set_matrix_v_1, set_matrix_v_2, set_matrix_v_3, set_matrix_v_4);
 
-    double Tx = -1.0*((WxSB_TranslationX->GetValue() - 100.0) / 50.0);
-    double Ty = ((WxSB_TranslationY->GetValue() - 100.0) / 50.0);
-    double Tz = 1.1+((WxSB_TranslationZ->GetValue() - 100.0) / 50.0) ;
-    Matrix4 Trans_matrix;
-    set_matrix_v_1.Set(1.0, 0.0, 0.0);
-    set_matrix_v_2.Set(0.0, 1.0, 0.0);
-    set_matrix_v_3.Set(0.0, 0.0, 1.0);
-    set_matrix_v_4.Set(Tx, Ty, Tz);
-    SetMatrix(Trans_matrix, set_matrix_v_1, set_matrix_v_2, set_matrix_v_3, set_matrix_v_4);
-
-
-    //DrawWithTransformation(Scale_matrix* Rot_Z_matrix * Rot_Y_matrix * Rot_X_matrix * Trans_matrix, MVP_matrix, Trans_matrix);
-    DrawWithTransformation(Rot_Z_matrix * Rot_Y_matrix * Rot_X_matrix *  Scale_matrix , MVP_matrix , Trans_matrix);
-// tu rysowac
-}
-
-
-
-void GUIMyFrame1::DrawWithTransformation(Matrix4 transformation, Matrix4 prspective, Matrix4 translation)
-{
-    
 
     double Tx = -1.0 * ((WxSB_TranslationX->GetValue() - 100.0) / 50.0);
     double Ty = ((WxSB_TranslationY->GetValue() - 100.0) / 50.0);
-    double Tz = 1.0+ ((WxSB_TranslationZ->GetValue() - 100.0) / 50.0);
-    double window_x = WxPanel->GetSize().x, window_y = WxPanel->GetSize().y;
-    Matrix4 scale_matrix;
-    scale_matrix.data[0][0] = window_x /2.0;
-    scale_matrix.data[1][1] = window_y / 2.0;
-    scale_matrix.data[2][2] = 1.0;
-    scale_matrix.data[3][3] = 1.0;
+    double Tz = 1.0 + ((WxSB_TranslationZ->GetValue() - 100.0) / 50.0);
+
+
+    Matrix4 scale_matrix_to_window;
+    scale_matrix_to_window.data[0][0] = window_x / 2.0;
+    scale_matrix_to_window.data[1][1] = window_y / 2.0;
+    scale_matrix_to_window.data[2][2] = 1.0;
+    scale_matrix_to_window.data[3][3] = 1.0;
+
+
     wxClientDC dc1(WxPanel);
     wxBufferedDC dc(&dc1);
 
     dc.SetBackground(wxBrush(RGB(255, 255, 255)));
     dc.Clear();
 
-    /*Vector4 v_eye, v_center, v_up;
-    v_eye.Set(0.0, 0.0, 0.0); v_center.Set(0.0, 0.0, 1.1); v_up.Set(0.0, 1.0, 0.0);
-    Matrix4 look_matrix = LookAt(v_eye, v_center, v_up);*/
 
     Vector4 v_begin, v_end;
     wxColor color_line;
     for (int i = 0; i < data.size(); i++)
     {
-        v_begin.Set( data[i].begin.x, data[i].begin.y, data[i].begin.z);
+        v_begin.Set(data[i].begin.x, data[i].begin.y, data[i].begin.z);
         v_end.Set(data[i].end.x, data[i].end.y, data[i].end.z);
         color_line = wxColor(data[i].color.R, data[i].color.G, data[i].color.B);
         dc.SetPen(color_line);
 
-        
 
-        v_begin =  transformation *  v_begin;
-        v_end =  transformation * v_end;
+        v_begin = Rot_Z_matrix * Rot_Y_matrix * Rot_X_matrix * Scale_matrix * v_begin;
+        v_end = Rot_Z_matrix * Rot_Y_matrix * Rot_X_matrix * Scale_matrix * v_end;
 
         v_begin.Set(v_begin.GetX() + Tx, v_begin.GetY() + Ty, v_begin.GetZ() + Tz);
         v_end.Set(v_end.GetX() + Tx, v_end.GetY() + Ty, v_end.GetZ() + Tz);
 
 
-
         double barier = 0.1;
-        if ((v_begin.GetZ() > barier && v_end.GetZ() <= barier) || (v_end.GetZ() > barier && v_begin.GetZ() <= barier))
-        {
-           Vector4 v_in, v_out;
-            if (v_end.GetZ() <= barier)
-            {
-                v_in = v_begin;
-                v_out = v_end;
-            }
-            else
-            {
-                v_in = v_end;
-                v_out = v_begin;
-            }
-            double length = fabs((barier- v_out.GetZ()/(v_in.GetZ()- v_out.GetZ())));
-            v_out.Set(v_in.GetX()-v_out.GetX()*length + v_out.GetX(), v_in.GetY() - v_out.GetY() * length + v_out.GetY(), barier);
-
-            v_begin = v_out;
-            v_end = v_in;
-
-
-            v_begin =  prspective *  v_begin;
-            v_end =  prspective *  v_end;
-            
-            v_begin.Set(v_begin.GetX()/ v_begin.data[3], v_begin.GetY() / v_begin.data[3], v_begin.GetZ() / v_begin.data[3]);
-            v_end.Set(v_end.GetX() / v_end.data[3], v_end.GetY() / v_end.data[3], v_end.GetZ() / v_end.data[3]);
-
-
-            v_begin =  scale_matrix * v_begin;
-            v_end =  scale_matrix * v_end;
-            dc.DrawLine(v_begin.GetX()  + window_x / 2.0, v_begin.GetY()  + window_y / 2.0, v_end.GetX()  + window_x / 2.0, v_end.GetY()  + window_y / 2.0);
-
-        }
-        else if (v_begin.GetZ() <= barier && v_end.GetZ() <= barier)
+        if (v_begin.GetZ() <= barier && v_end.GetZ() <= barier)
         {
         }
         else
         {
+            if ((v_begin.GetZ() > barier && v_end.GetZ() <= barier) || (v_end.GetZ() > barier && v_begin.GetZ() <= barier))
+            {
+                Vector4 v_in, v_out;
+                if (v_end.GetZ() <= barier)
+                {
+                    v_in = v_begin;
+                    v_out = v_end;
+                }
+                else
+                {
+                    v_in = v_end;
+                    v_out = v_begin;
+                }
+                double length = fabs((barier - v_out.GetZ() / (v_in.GetZ() - v_out.GetZ())));
+                v_out.Set(v_in.GetX() - v_out.GetX() * length + v_out.GetX(), v_in.GetY() - v_out.GetY() * length + v_out.GetY(), barier);
 
-            v_begin =  prspective *  v_begin;
-            v_end =  prspective *  v_end;
+                v_begin = v_out;
+                v_end = v_in;
+            }           
+
+
+            v_begin = MVP_matrix * v_begin;
+            v_end = MVP_matrix * v_end;
+
             v_begin.Set(v_begin.GetX() / v_begin.data[3], v_begin.GetY() / v_begin.data[3], v_begin.GetZ() / v_begin.data[3]);
             v_end.Set(v_end.GetX() / v_end.data[3], v_end.GetY() / v_end.data[3], v_end.GetZ() / v_end.data[3]);
 
-            
 
-            v_begin =   scale_matrix* v_begin;
-            v_end =  scale_matrix* v_end;
-
+            v_begin = scale_matrix_to_window * v_begin;
+            v_end = scale_matrix_to_window * v_end;
             dc.DrawLine(v_begin.GetX() + window_x / 2.0, v_begin.GetY() + window_y / 2.0, v_end.GetX() + window_x / 2.0, v_end.GetY() + window_y / 2.0);
-        }
-
-        
-        //dc.DrawLine(v_begin.GetX()  + window_x / 2.0, v_begin.GetY()  + window_y / 2.0, v_end.GetX()  + window_x / 2.0, v_end.GetY() + window_y / 2.0);
-        
-        
+        }        
     }
 }
-/*
-Matrix4 GUIMyFrame1::LookAt(Vector4 eye, Vector4 center, Vector4 up)
-{
-    Matrix4 matrix;
-    Vector4 v_X, v_Y, v_Z, v_W;
-    v_Z = eye - center;
-    double norm = norm_vect(v_Z);
-    v_Z.Set(v_Z.GetX() / norm, v_Z.GetY() / norm, v_Z.GetZ() / norm);
-    v_Y = up;
-    v_X = vector_product(v_Y, v_Z);
-    v_Y = vector_product(v_Z, v_X);
-    norm= norm_vect(v_X);
-    v_X.Set(v_X.GetX() / norm, v_X.GetY() / norm, v_X.GetZ() / norm);
-    norm = norm_vect(v_Y);
-    v_Y.Set(v_Y.GetX() / norm, v_Y.GetY() / norm, v_Y.GetZ() / norm);
-    v_W.Set(0.0, 0.0, 0.0);
-    SetMatrix(matrix, v_X, v_Y, v_Z, v_W);
-    matrix.data[3][0] = -1.0 * scalar_product(v_X , eye);
-    matrix.data[3][1] = -1.0 * scalar_product(v_Y , eye);
-    matrix.data[3][2] = -1.0 * scalar_product(v_Z , eye);
-    return matrix;
-}
 
-double GUIMyFrame1::norm_vect(Vector4& a)
-{
-    return sqrt(a.GetX() * a.GetX() + a.GetY() * a.GetY() + a.GetZ() * a.GetZ());
-}
-
-Vector4 GUIMyFrame1::vector_product(Vector4& a, Vector4& b)
-{
-    Vector4 product;
-    product.Set(a.GetY()*b.GetZ()- a.GetZ() * b.GetY(), a.GetZ() * b.GetX() - a.GetX() * b.GetZ(), a.GetX() * b.GetY() - a.GetY() * b.GetX());
-    return product;
-}
-
-double GUIMyFrame1::scalar_product(Vector4& a, Vector4& b)
-{
-    double product;
-    product=(a.GetX() * b.GetX() + a.GetY() * b.GetY()+ a.GetZ() * b.GetZ());
-    return product;
-}
-*/
 void GUIMyFrame1::SetMatrix(Matrix4& matrix, Vector4& v_1, Vector4& v_2, Vector4& v_3, Vector4& v_4)//v_1 to v_4 are vertical vectors, this enable to easily set the matrix
 {
     matrix.data[0][0] = v_1.GetX();

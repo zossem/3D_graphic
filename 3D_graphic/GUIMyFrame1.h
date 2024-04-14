@@ -32,11 +32,7 @@ class GUIMyFrame1 : public MyFrame1
 	//// end generated class members
   void Repaint();
   
-  void DrawWithTransformation(Matrix4 transformation, Matrix4 prspective, Matrix4 translation);
-  Matrix4 LookAt(Vector4 eye, Vector4 center, Vector4 up);
-  double norm_vect(Vector4& a);
-  Vector4 vector_product(Vector4& a, Vector4& b);
-  double scalar_product(Vector4& a, Vector4& b);
+  void DrawWithTransformation(Matrix4 transformation, Matrix4 prspective);
   void SetMatrix(Matrix4& matrix, Vector4& v_1, Vector4& v_2, Vector4& v_3, Vector4& v_4);
 };
 
