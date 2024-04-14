@@ -94,7 +94,8 @@ Repaint();
 
 void GUIMyFrame1::Repaint()
 {
-    double window_x = WxPanel->GetSize().x, window_y = WxPanel->GetSize().y;
+    double window_x = WxPanel->GetSize().x;
+    double window_y = WxPanel->GetSize().y;
     Vector4 set_matrix_v_1, set_matrix_v_2, set_matrix_v_3, set_matrix_v_4;
 
     Matrix4 MVP_matrix;
@@ -148,8 +149,8 @@ void GUIMyFrame1::Repaint()
 
 
     Matrix4 scale_matrix_to_window;
-    scale_matrix_to_window.data[0][0] = window_x / 2.0;
-    scale_matrix_to_window.data[1][1] = window_y / 2.0;
+    scale_matrix_to_window.data[0][0] = window_x/2.0;
+    scale_matrix_to_window.data[1][1] = window_y/2.0;
     scale_matrix_to_window.data[2][2] = 1.0;
     scale_matrix_to_window.data[3][3] = 1.0;
 
@@ -214,7 +215,8 @@ void GUIMyFrame1::Repaint()
 
             v_begin = scale_matrix_to_window * v_begin;
             v_end = scale_matrix_to_window * v_end;
-            dc.DrawLine(v_begin.GetX() + window_x / 2.0, v_begin.GetY() + window_y / 2.0, v_end.GetX() + window_x / 2.0, v_end.GetY() + window_y / 2.0);
+            dc.DrawLine(v_begin.GetX() + window_x / 2.0, v_begin.GetY() + window_y / 2.0,
+                        v_end.GetX() + window_x / 2.0, v_end.GetY() + window_y / 2.0);
         }        
     }
 }
