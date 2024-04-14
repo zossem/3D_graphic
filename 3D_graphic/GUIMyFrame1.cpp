@@ -144,9 +144,9 @@ void GUIMyFrame1::Repaint()
     set_matrix_v_4.Set(0.0, 0.0, 0.0);
     SetMatrix(Rot_Z_matrix, set_matrix_v_1, set_matrix_v_2, set_matrix_v_3, set_matrix_v_4);
 
-    double Tx=(WxSB_TranslationX->GetValue() - 100.0) / 50.0;
-    double Ty= (WxSB_TranslationY->GetValue() - 100.0) / 50.0;
-    double Tz=  (WxSB_TranslationZ->GetValue() - 100.0) / 50.0;
+    double Tx = ((WxSB_TranslationX->GetValue() - 100.0) / 50.0) *(window_x / 2.0) *Sx;
+    double Ty = ((WxSB_TranslationY->GetValue() - 100.0) / 50.0) * (window_y / 2.0) * Sy;
+    double Tz = 1.1+ ((WxSB_TranslationZ->GetValue() - 100.0) / 50.0) *Sz ;
     Matrix4 Trans_matrix;
     set_matrix_v_1.Set(1.0, 0.0, 0.0);
     set_matrix_v_2.Set(0.0, 1.0, 0.0);
@@ -155,7 +155,7 @@ void GUIMyFrame1::Repaint()
     SetMatrix(Trans_matrix, set_matrix_v_1, set_matrix_v_2, set_matrix_v_3, set_matrix_v_4);
 
     //DrawWithTransformation(MVP_matrix * Rot_Z_matrix * Rot_Y_matrix * Rot_X_matrix * Scale_matrix);
-    DrawWithTransformation(Rot_Z_matrix * Rot_Y_matrix * Rot_X_matrix *  Scale_matrix, MVP_matrix , Trans_matrix);
+    DrawWithTransformation( Rot_Z_matrix * Rot_Y_matrix * Rot_X_matrix *  Scale_matrix , MVP_matrix , Trans_matrix);
 // tu rysowac
 }
 
@@ -217,8 +217,8 @@ void GUIMyFrame1::DrawWithTransformation(Matrix4 transformation, Matrix4 prspect
             scale_matrix.data[2][2] = 1.0;
             scale_matrix.data[3][3] = 1.0;
 
-            v_begin = translation* look_matrix * scale_matrix* v_begin;
-            v_end = translation * look_matrix * scale_matrix* v_end;
+            v_begin = translation* look_matrix * scale_matrix * v_begin;
+            v_end = translation * look_matrix * scale_matrix * v_end;
             dc.DrawLine(v_begin.GetX()  + window_x / 2.0, v_begin.GetY()  + window_y / 2.0, v_end.GetX()  + window_x / 2.0, v_end.GetY()  + window_y / 2.0);
 
         }
