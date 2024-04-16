@@ -31,8 +31,6 @@ class GUIMyFrame1 : public MyFrame1
 		GUIMyFrame1( wxWindow* parent );
 	//// end generated class members
   void Repaint();
-  
-  void DrawWithTransformation(Matrix4 transformation, Matrix4 prspective);
   void SetMatrix(Matrix4& matrix, Vector4& v_1, Vector4& v_2, Vector4& v_3, Vector4& v_4);
 };
 

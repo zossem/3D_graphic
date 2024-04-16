@@ -168,7 +168,11 @@ void GUIMyFrame1::Repaint()
     {
         v_begin.Set(data[i].begin.x, data[i].begin.y, data[i].begin.z);
         v_end.Set(data[i].end.x, data[i].end.y, data[i].end.z);
-        color_line = wxColor(data[i].color.R, data[i].color.G, data[i].color.B);
+
+        double red_scale = ((v_begin.GetY() + 1.0) / 2.0) * 255;
+        double blue_scale = ((v_begin.GetY() * (-1.0) + 1.0) / 2.0) * 255;
+        color_line = wxColor(red_scale, 0, blue_scale);
+        //color_line = wxColor(data[i].color.R, data[i].color.G, data[i].color.B);
         dc.SetPen(color_line);
 
 
